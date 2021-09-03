@@ -130,6 +130,9 @@ class PhoneState {
   Future<bool?> get requestPhoneStatePermissions =>
       _foregroundChannel.invokeMethod<bool>(REQUEST_PHONE_STATE_PERMISSION);
 
+  Future<bool?> get requestRollCallScreen =>
+      _foregroundChannel.invokeMethod<bool>(REQUEST_ROLL_CALL_SCREEN);
+
   /// ## Do not call this method. This method is visible only for testing.
   @visibleForTesting
   Future<dynamic> handler(MethodCall call) async {

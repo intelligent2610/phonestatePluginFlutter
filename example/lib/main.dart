@@ -47,9 +47,15 @@ class _MyAppState extends State<MyApp> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
 
-    final bool? result = await phoneState.requestPhoneStatePermissions;
+    final bool? resultPermission =
+        await phoneState.requestPhoneStatePermissions;
+    final bool? resultRollCallScreen =
+        await phoneState.requestRollCallScreen;
 
-    if (result != null && result) {
+    if (resultPermission != null &&
+        resultPermission &&
+        resultRollCallScreen != null &&
+        resultRollCallScreen) {
       phoneState.listenIncomingSms(
           onNewPhoneState: onPhone, onBackgroundPhoneStateHandle: onPhoneBg);
     }

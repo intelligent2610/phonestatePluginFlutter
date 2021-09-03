@@ -21,6 +21,7 @@ enum class PhoneAction(private val methodName: String) {
     GET_NETWORK_OPERATOR("getNetworkOperator"),
     GET_NETWORK_OPERATOR_NAME("getNetworkOperatorName"),
     GET_DATA_NETWORK_TYPE("getDataNetworkType"),
+    REQUEST_ROLL("requestRollCallScreen"),
     GET_PHONE_TYPE("getPhoneType"),
     GET_SIM_OPERATOR("getSimOperator"),
     GET_SIM_OPERATOR_NAME("getSimOperatorName"),
@@ -79,6 +80,7 @@ enum class PhoneAction(private val methodName: String) {
             REQUEST_PHONE_STATE_PERMISSIONS,
             REQUEST_PHONE_PERMISSIONS,
             REQUEST_PHONE_AND_SMS_PERMISSIONS -> ActionType.PERMISSION
+            REQUEST_ROLL -> ActionType.REQUEST_ROLL
             OPEN_DIALER,
             DIAL_PHONE_NUMBER -> ActionType.CALL
         }
@@ -86,7 +88,7 @@ enum class PhoneAction(private val methodName: String) {
 }
 
 enum class ActionType {
-    GET_SMS, SEND_SMS, BACKGROUND, GET, PERMISSION, CALL
+    GET_SMS, SEND_SMS, BACKGROUND, GET, PERMISSION, REQUEST_ROLL, CALL
 }
 
 enum class ContentUri(val uri: Uri) {

@@ -8,6 +8,7 @@ public class Constants {
 
     public static final String EMPTY_STRING = "";
     public static final int ALL_REQUEST_CODE = 90;
+    public static final int REQUEST_ROLE_CALL_SCREEN = 91;
 
     public static final String HANDLE = "handle";
     public static final String PHONE_NUMBER = "phone_number";

@@ -46,12 +46,12 @@ public class PhoneStateHandler extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        if (intent.hasExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)) {
-            phoneNumberCalling = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (intent.hasExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)) {
+                phoneNumberCalling = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
+            }
         }
-//        }
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
         if (TelephonyManager.EXTRA_STATE_OFFHOOK.equalsIgnoreCase(state)) {
             if (TextUtils.isEmpty(phoneNumberCalling)) {

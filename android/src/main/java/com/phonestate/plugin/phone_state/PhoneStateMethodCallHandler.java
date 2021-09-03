@@ -1,6 +1,7 @@
 package com.phonestate.plugin.phone_state;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,18 +24,20 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
+import static android.content.Context.ROLE_SERVICE;
 import static com.phonestate.plugin.phone_state.utils.Constants.ALL_REQUEST_CODE;
 import static com.phonestate.plugin.phone_state.utils.Constants.BACKGROUND_HANDLE;
 import static com.phonestate.plugin.phone_state.utils.Constants.FAILED_FETCH;
 import static com.phonestate.plugin.phone_state.utils.Constants.ILLEGAL_ARGUMENT;
 import static com.phonestate.plugin.phone_state.utils.Constants.PERMISSION_DENIED;
 import static com.phonestate.plugin.phone_state.utils.Constants.PERMISSION_DENIED_MESSAGE;
+import static com.phonestate.plugin.phone_state.utils.Constants.REQUEST_ROLE_CALL_SCREEN;
 import static com.phonestate.plugin.phone_state.utils.Constants.SETUP_HANDLE;
 import static com.phonestate.plugin.phone_state.utils.Constants.WRONG_METHOD_TYPE;
 
 public class PhoneStateMethodCallHandler extends
         BroadcastReceiver implements PluginRegistry.RequestPermissionsResultListener,
-        MethodChannel.MethodCallHandler {
+        MethodChannel.MethodCallHandler, PluginRegistry.ActivityResultListener {
     private final Context context;
     private final PermissionsController permissionsController;
 
@@ -69,7 +72,7 @@ public class PhoneStateMethodCallHandler extends
     public void onMethodCall(@NonNull @NotNull MethodCall call, @NonNull @NotNull MethodChannel.Result result) {
         this.result = result;
         action = PhoneAction.fromMethod(call.method);
-        if (call.method == null || call.method.isEmpty()) {
+        if (call.method.isEmpty()) {
             return;
         }
         if (action.toActionType() == ActionType.BACKGROUND) {
@@ -87,10 +90,28 @@ public class PhoneStateMethodCallHandler extends
                 this.backgroundHandle = backgroundHandle;
             }
             handleMethod(action);
+        } else if (action.toActionType() == ActionType.REQUEST_ROLL) {
+            requestRole();
         } else if (action.toActionType() == ActionType.PERMISSION) {
             handleMethod(action);
         }
 
+    }
+
+    /**
+     * Request default App Caller-Id and Spam
+     */
+    private void requestRole() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roleManager = (RoleManager) context.getSystemService(ROLE_SERVICE);
+            if (!roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING) || !roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) {
+                activity.startActivityIfNeeded(roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING), REQUEST_ROLE_CALL_SCREEN, null);
+            } else {
+                execute(action);
+            }
+        } else {
+            execute(action);
+        }
     }
 
 
@@ -129,9 +150,7 @@ public class PhoneStateMethodCallHandler extends
                 case BACKGROUND:
                     handleBackgroundActions(action);
                     break;
-//                case GET:
-//                    handleGetActions(action);
-//                    break;
+                case REQUEST_ROLL:
                 case PERMISSION:
                     result.success(true);
                     break;
@@ -168,7 +187,7 @@ public class PhoneStateMethodCallHandler extends
         permissionsController.isRequestingPermission = false;
 
         List<String> deniedPermissions = new ArrayList<>();
-        if (requestCode != ALL_REQUEST_CODE && action == null) {
+        if (requestCode != ALL_REQUEST_CODE && action == null && requestCode != REQUEST_ROLE_CALL_SCREEN) {
             return false;
         }
         boolean allPermissionGranted = true;
@@ -191,5 +210,16 @@ public class PhoneStateMethodCallHandler extends
 
     private void onPermissionDenied(List<String> deniedPermissions) {
         result.error(PERMISSION_DENIED, PERMISSION_DENIED_MESSAGE, deniedPermissions);
+    }
+
+    @Override
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (REQUEST_ROLE_CALL_SCREEN == requestCode) {
+            RoleManager roleManager = (RoleManager) context.getSystemService(ROLE_SERVICE);
+            if (roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING) && roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) {
+                execute(action);
+            }
+        }
+        return false;
     }
 }
