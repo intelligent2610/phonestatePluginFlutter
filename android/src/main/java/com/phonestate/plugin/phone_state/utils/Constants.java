@@ -12,6 +12,9 @@ public class Constants {
 
     public static final String HANDLE = "handle";
     public static final String PHONE_NUMBER = "phone_number";
+    public static final String GROUP_NAME = "group_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String CUSTOMER_NAME = "customer_name";
 
     public static final String ON_PHONE_OFF_HOOK = "onPhoneOffHook";
     public static final String SHARED_PREFS_BACKGROUND_PHONE_HANDLE = "background_phone_handle";
@@ -28,7 +31,11 @@ public class Constants {
     public static final String BACKGROUND_HANDLE = "backgroundHandle";
 
 
+    public static final String MISSING_CONTACT_INFO = "Missing contact info";
+    public static final String WRONG_METHOD_TYPE = "Incorrect method called on channel";
+
+
+    public static final String FAILED_INSERT_CONTACT = "failed_insert_contact";
     public static final String ILLEGAL_ARGUMENT = "illegal_argument";
     public static final String FAILED_FETCH = "failed_to_fetch_phone_call";
-    public static final String WRONG_METHOD_TYPE = "Incorrect method called on channel";
 }
