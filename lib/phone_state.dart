@@ -81,7 +81,7 @@ class PhoneState {
   /// ignored if [onBackgroundMessage] is not set.
   ///
   ///
-  void listenIncomingSms(
+  void listenPhoneOffHook(
       {required PhoneStateHandler onNewPhoneState,
       PhoneStateHandler? onBackgroundPhoneStateHandle,
       bool listenInBackground = true}) {
@@ -141,5 +141,23 @@ class PhoneState {
         final message = call.arguments[ARG_PHONE_NUMBER];
         return _onNewPhoneState(message);
     }
+  }
+
+  Future<bool?> addContact({
+    required String groupName,
+    required String customerName,
+    required String lastName,
+    required String phoneNumber,
+  }) async {
+    assert(_platform.isAndroid == true, "Can only be called on Android.");
+
+    final Map<String, dynamic> args = {
+      ARG_PHONE_NUMBER: phoneNumber,
+      ARG_GROUP_NAME: groupName,
+      ARG_LAST_NAME: lastName,
+      ARG_CUSTOMER_NAME: customerName
+    };
+    await _foregroundChannel.invokeMethod<bool>(
+        INSERT_CUSTOMER_INTO_CONTACT, args);
   }
 }

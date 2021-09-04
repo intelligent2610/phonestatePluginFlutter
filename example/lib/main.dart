@@ -49,14 +49,13 @@ class _MyAppState extends State<MyApp> {
 
     final bool? resultPermission =
         await phoneState.requestPhoneStatePermissions;
-    final bool? resultRollCallScreen =
-        await phoneState.requestRollCallScreen;
+    final bool? resultRollCallScreen = await phoneState.requestRollCallScreen;
 
     if (resultPermission != null &&
         resultPermission &&
         resultRollCallScreen != null &&
         resultRollCallScreen) {
-      phoneState.listenIncomingSms(
+      phoneState.listenPhoneOffHook(
           onNewPhoneState: onPhone, onBackgroundPhoneStateHandle: onPhoneBg);
     }
 

@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 
 import com.phonestate.plugin.phone_state.ActionType;
 import com.phonestate.plugin.phone_state.PhoneAction;
+import com.phonestate.plugin.phone_state.contact.ContactHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,10 +28,16 @@ import io.flutter.plugin.common.PluginRegistry;
 import static android.content.Context.ROLE_SERVICE;
 import static com.phonestate.plugin.phone_state.utils.Constants.ALL_REQUEST_CODE;
 import static com.phonestate.plugin.phone_state.utils.Constants.BACKGROUND_HANDLE;
+import static com.phonestate.plugin.phone_state.utils.Constants.CUSTOMER_NAME;
 import static com.phonestate.plugin.phone_state.utils.Constants.FAILED_FETCH;
+import static com.phonestate.plugin.phone_state.utils.Constants.FAILED_INSERT_CONTACT;
+import static com.phonestate.plugin.phone_state.utils.Constants.GROUP_NAME;
 import static com.phonestate.plugin.phone_state.utils.Constants.ILLEGAL_ARGUMENT;
+import static com.phonestate.plugin.phone_state.utils.Constants.LAST_NAME;
+import static com.phonestate.plugin.phone_state.utils.Constants.MISSING_CONTACT_INFO;
 import static com.phonestate.plugin.phone_state.utils.Constants.PERMISSION_DENIED;
 import static com.phonestate.plugin.phone_state.utils.Constants.PERMISSION_DENIED_MESSAGE;
+import static com.phonestate.plugin.phone_state.utils.Constants.PHONE_NUMBER;
 import static com.phonestate.plugin.phone_state.utils.Constants.REQUEST_ROLE_CALL_SCREEN;
 import static com.phonestate.plugin.phone_state.utils.Constants.SETUP_HANDLE;
 import static com.phonestate.plugin.phone_state.utils.Constants.WRONG_METHOD_TYPE;
@@ -47,14 +54,8 @@ public class PhoneStateMethodCallHandler extends
 
     private PhoneAction action;
 
-    private String selection;
-    private List<String> selectionArgs;
-
     private Long setupHandle = -1L;
     private Long backgroundHandle = -1L;
-
-    private String phoneNumber;
-
 
     public PhoneStateMethodCallHandler(Context context, PermissionsController permissionsController) {
         this.context = context;
@@ -90,12 +91,29 @@ public class PhoneStateMethodCallHandler extends
                 this.backgroundHandle = backgroundHandle;
             }
             handleMethod(action);
+        } else if (action.toActionType() == ActionType.INSERT_CONTACT) {
+            insertContact(call, context);
         } else if (action.toActionType() == ActionType.REQUEST_ROLL) {
             requestRole();
         } else if (action.toActionType() == ActionType.PERMISSION) {
             handleMethod(action);
         }
 
+    }
+
+    private void insertContact(MethodCall call, Context context) {
+        if (call.hasArgument(GROUP_NAME)
+                && call.hasArgument(LAST_NAME) && call.hasArgument(CUSTOMER_NAME)
+                && call.hasArgument(PHONE_NUMBER)) {
+            final String groupName = call.argument(GROUP_NAME);
+            final String lastName = call.argument(LAST_NAME);
+            final String customerName = call.argument(CUSTOMER_NAME);
+            final String phoneNumber = call.argument(PHONE_NUMBER);
+            ContactHelper.insertPhoneNumberToContact(context, phoneNumber, groupName, customerName, lastName);
+            result.success(true);
+        } else {
+            result.error(FAILED_INSERT_CONTACT, MISSING_CONTACT_INFO, null);
+        }
     }
 
     /**
@@ -183,7 +201,8 @@ public class PhoneStateMethodCallHandler extends
     }
 
     @Override
-    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions,
+                                              int[] grantResults) {
         permissionsController.isRequestingPermission = false;
 
         List<String> deniedPermissions = new ArrayList<>();

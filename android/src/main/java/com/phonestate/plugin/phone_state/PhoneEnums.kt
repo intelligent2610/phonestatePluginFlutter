@@ -4,6 +4,11 @@ import android.net.Uri
 import android.provider.Telephony
 
 enum class PhoneAction(private val methodName: String) {
+    REQUEST_PHONE_STATE_PERMISSIONS("requestPhoneStatePermission"),
+    REQUEST_PHONE_PERMISSIONS("requestPhonePermissions"),
+    BACKGROUND_SERVICE_INITIALIZED("backgroundServiceInitialized"),
+    INSERT_CUSTOMER_INTO_CONTACT("insertCustomerIntoContact"),
+
     GET_INBOX("getAllInboxSms"),
     GET_SENT("getAllSentSms"),
     GET_DRAFT("getAllDraftSms"),
@@ -13,7 +18,6 @@ enum class PhoneAction(private val methodName: String) {
     SEND_SMS_INTENT("sendSmsIntent"),
     START_BACKGROUND_SERVICE("startBackgroundService"),
     DISABLE_BACKGROUND_SERVICE("disableBackgroundService"),
-    BACKGROUND_SERVICE_INITIALIZED("backgroundServiceInitialized"),
     IS_SMS_CAPABLE("isSmsCapable"),
     GET_CELLULAR_DATA_STATE("getCellularDataState"),
     GET_CALL_STATE("getCallState"),
@@ -29,8 +33,6 @@ enum class PhoneAction(private val methodName: String) {
     GET_SERVICE_STATE("getServiceState"),
     GET_SIGNAL_STRENGTH("getSignalStrength"),
     IS_NETWORK_ROAMING("isNetworkRoaming"),
-    REQUEST_PHONE_STATE_PERMISSIONS("requestPhoneStatePermission"),
-    REQUEST_PHONE_PERMISSIONS("requestPhonePermissions"),
     REQUEST_PHONE_AND_SMS_PERMISSIONS("requestPhoneAndSmsPermissions"),
     OPEN_DIALER("openDialer"),
     DIAL_PHONE_NUMBER("dialPhoneNumber"),
@@ -69,6 +71,7 @@ enum class PhoneAction(private val methodName: String) {
             GET_DATA_ACTIVITY,
             GET_NETWORK_OPERATOR,
             GET_NETWORK_OPERATOR_NAME,
+            INSERT_CUSTOMER_INTO_CONTACT -> ActionType.INSERT_CONTACT
             GET_DATA_NETWORK_TYPE,
             GET_PHONE_TYPE,
             GET_SIM_OPERATOR,
@@ -88,7 +91,7 @@ enum class PhoneAction(private val methodName: String) {
 }
 
 enum class ActionType {
-    GET_SMS, SEND_SMS, BACKGROUND, GET, PERMISSION, REQUEST_ROLL, CALL
+    GET_SMS, SEND_SMS, BACKGROUND, GET, PERMISSION, REQUEST_ROLL, CALL, INSERT_CONTACT
 }
 
 enum class ContentUri(val uri: Uri) {
