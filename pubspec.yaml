@@ -1,7 +1,7 @@
 name: phone_state
 description: A new Flutter project.
 version: 0.0.1
-homepage:
+homepage: https://github.com/intelligent2610/phonestatePluginFlutter
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
